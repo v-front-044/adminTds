@@ -31,10 +31,11 @@ const UserCreateDialog: React.FC<UserCreateDialogProps> = ({
   onUserCreated,
 }) => {
   const [formData, setFormData] = useState<Partial<User>>({
-    name: "",
-    email: "",
-    role: "user",
-    status: "active",
+    first_name: "",
+    last_name: null,
+    keitaro_login: "",
+    role: "BUYER",
+    tg_username: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,7 +45,7 @@ const UserCreateDialog: React.FC<UserCreateDialogProps> = ({
   ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value || null,
     });
   };
 
@@ -60,10 +61,23 @@ const UserCreateDialog: React.FC<UserCreateDialogProps> = ({
     setIsSubmitting(true);
 
     try {
-      const result = await createUser(formData);
+      // Generate ID from email (keitaro_login)
+      const userData = {
+        ...formData,
+        id: formData.keitaro_login || "",
+      };
+      
+      const result = await createUser(userData);
       if (result) {
         onUserCreated();
         onClose();
+        setFormData({
+          first_name: "",
+          last_name: null,
+          keitaro_login: "",
+          role: "BUYER",
+          tg_username: "",
+        });
       }
     } finally {
       setIsSubmitting(false);
@@ -74,60 +88,63 @@ const UserCreateDialog: React.FC<UserCreateDialogProps> = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create User</DialogTitle>
+          <DialogTitle>Create New User</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="first_name">First Name*</Label>
               <Input
-                id="name"
-                name="name"
-                value={formData.name}
+                id="first_name"
+                name="first_name"
+                value={formData.first_name}
                 onChange={handleChange}
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="last_name">Last Name</Label>
               <Input
-                id="email"
-                name="email"
+                id="last_name"
+                name="last_name"
+                value={formData.last_name || ""}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="keitaro_login">Email (Keitaro Login)*</Label>
+              <Input
+                id="keitaro_login"
+                name="keitaro_login"
                 type="email"
-                value={formData.email}
+                value={formData.keitaro_login}
                 onChange={handleChange}
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="role">Role</Label>
+              <Label htmlFor="tg_username">Telegram Username</Label>
+              <Input
+                id="tg_username"
+                name="tg_username"
+                value={formData.tg_username || ""}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="role">Role*</Label>
               <Select
                 value={formData.role}
                 onValueChange={(value) => handleSelectChange("role", value)}
+                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="editor">Editor</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => handleSelectChange("status", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                  <SelectItem value="blocked">Blocked</SelectItem>
+                  <SelectItem value="BUSINESS_DEVELOPER">Business Developer</SelectItem>
+                  <SelectItem value="BUYER">Buyer</SelectItem>
+                  <SelectItem value="BUYER_ASSISTANT">Buyer Assistant</SelectItem>
                 </SelectContent>
               </Select>
             </div>

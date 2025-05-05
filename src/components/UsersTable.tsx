@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Edit, Trash2 } from "lucide-react";
 import { User } from "@/services/api";
 import UserEditDialog from "./UserEditDialog";
 import UserDeleteDialog from "./UserDeleteDialog";
@@ -37,6 +37,13 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onUserUpdated }) => {
     setDeletingUser(user);
   };
 
+  const formatName = (user: User) => {
+    if (user.first_name && user.last_name) {
+      return `${user.first_name} ${user.last_name}`;
+    }
+    return user.first_name;
+  };
+
   return (
     <>
       <div className="bg-white rounded-md shadow">
@@ -46,8 +53,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onUserUpdated }) => {
               <TableHead className="font-semibold">Name</TableHead>
               <TableHead className="font-semibold">Email</TableHead>
               <TableHead className="font-semibold">Role</TableHead>
-              <TableHead className="font-semibold">Status</TableHead>
-              <TableHead className="font-semibold">Last Login</TableHead>
+              <TableHead className="font-semibold">Telegram</TableHead>
               <TableHead className="text-right font-semibold">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -55,21 +61,14 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onUserUpdated }) => {
             {users.length > 0 ? (
               users.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
+                  <TableCell className="font-medium">{formatName(user)}</TableCell>
+                  <TableCell>{user.keitaro_login}</TableCell>
                   <TableCell>
-                    <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        user.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {user.status}
+                    <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                      {user.role}
                     </span>
                   </TableCell>
-                  <TableCell>{user.lastLogin || "Never"}</TableCell>
+                  <TableCell>{user.tg_username || "Not set"}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -83,10 +82,12 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onUserUpdated }) => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-[160px]">
-                        <DropdownMenuItem onClick={() => handleEditClick(user)}>
+                        <DropdownMenuItem onClick={() => handleEditClick(user)} className="cursor-pointer">
+                          <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDeleteClick(user)} className="text-red-600">
+                        <DropdownMenuItem onClick={() => handleDeleteClick(user)} className="text-red-600 cursor-pointer">
+                          <Trash2 className="mr-2 h-4 w-4" />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -96,7 +97,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onUserUpdated }) => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-6">
+                <TableCell colSpan={5} className="text-center py-6">
                   No users found
                 </TableCell>
               </TableRow>

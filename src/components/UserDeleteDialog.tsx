@@ -41,6 +41,8 @@ const UserDeleteDialog: React.FC<UserDeleteDialogProps> = ({
     }
   };
 
+  const displayName = user.first_name + (user.last_name ? ` ${user.last_name}` : "");
+
   return (
     <AlertDialog open={open} onOpenChange={onClose}>
       <AlertDialogContent>
@@ -48,7 +50,7 @@ const UserDeleteDialog: React.FC<UserDeleteDialogProps> = ({
           <AlertDialogTitle>Are you sure you want to delete the user?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete{" "}
-            <strong>{user.name}</strong> and remove their data from our servers.
+            <strong>{displayName}</strong> and remove their data from our servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

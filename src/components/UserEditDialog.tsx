@@ -33,10 +33,11 @@ const UserEditDialog: React.FC<UserEditDialogProps> = ({
   onUserUpdated,
 }) => {
   const [formData, setFormData] = useState<Partial<User>>({
-    name: user.name,
-    email: user.email,
+    first_name: user.first_name,
+    last_name: user.last_name || null,
+    tg_username: user.tg_username || undefined,
     role: user.role,
-    status: user.status,
+    keitaro_login: user.keitaro_login,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,21 +82,39 @@ const UserEditDialog: React.FC<UserEditDialogProps> = ({
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="first_name">First Name</Label>
               <Input
-                id="name"
-                name="name"
-                value={formData.name}
+                id="first_name"
+                name="first_name"
+                value={formData.first_name}
                 onChange={handleChange}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="last_name">Last Name</Label>
               <Input
-                id="email"
-                name="email"
+                id="last_name"
+                name="last_name"
+                value={formData.last_name || ""}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="keitaro_login">Email (Keitaro Login)</Label>
+              <Input
+                id="keitaro_login"
+                name="keitaro_login"
                 type="email"
-                value={formData.email}
+                value={formData.keitaro_login}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="tg_username">Telegram Username</Label>
+              <Input
+                id="tg_username"
+                name="tg_username"
+                value={formData.tg_username || ""}
                 onChange={handleChange}
               />
             </div>
@@ -109,25 +128,9 @@ const UserEditDialog: React.FC<UserEditDialogProps> = ({
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="editor">Editor</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => handleSelectChange("status", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                  <SelectItem value="blocked">Blocked</SelectItem>
+                  <SelectItem value="BUSINESS_DEVELOPER">Business Developer</SelectItem>
+                  <SelectItem value="BUYER">Buyer</SelectItem>
+                  <SelectItem value="BUYER_ASSISTANT">Buyer Assistant</SelectItem>
                 </SelectContent>
               </Select>
             </div>
