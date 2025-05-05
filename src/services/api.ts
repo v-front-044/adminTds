@@ -1,15 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { API_ENDPOINTS } from "@/lib/constants";
 import { toast } from "sonner";
 
 export interface User {
-  id: string;
-  name: string;
-  email: string;
+  id: string; // login
+  first_name: string;
+  last_name?: string | null;
+  keitaro_login: string;
+  keitaro_personal_group_name?: string | null;
+  tg_username?: string;
   role: string;
-  status: string;
-  lastLogin?: string;
-  createdAt?: string;
+  managed_users: string[];
+  keitaro_user_id: number;
+  notion_user_id?: string | null;
+  tg_chat_id?: number;
 }
 
 export interface Log {
@@ -27,14 +32,32 @@ export async function getUsers(): Promise<User[]> {
     if (!response.ok) {
       throw new Error("Failed to fetch users");
     }
-    const data = await response.json();
-    return data.users || [];
+
+    const result = await response.json();
+    const data = result.data || {};
+
+    const users: User[] = Object.entries(data).map(([login, user]: [string, any]) => ({
+      id: login,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      keitaro_login: user.keitaro_login || login,
+      keitaro_personal_group_name: user.keitaro_personal_group_name,
+      tg_username: user.tg_username,
+      role: user.role,
+      managed_users: user.managed_users || [],
+      keitaro_user_id: user.keitaro_user_id,
+      notion_user_id: user.notion_user_id,
+      tg_chat_id: user.tg_chat_id,
+    }));
+
+    return users;
   } catch (error) {
     console.error("Error fetching users:", error);
     toast.error("Failed to load users");
     return [];
   }
 }
+
 
 export async function updateUser(id: string, userData: Partial<User>): Promise<User | null> {
   try {
@@ -105,7 +128,7 @@ export async function createUser(userData: Partial<User>): Promise<User | null> 
 
 export async function getLogs(date?: string, page: number = 1): Promise<Log[]> {
   try {
-    let url = API_ENDPOINTS.logs;
+    const url = API_ENDPOINTS.logs;
     const params = new URLSearchParams();
     
     if (date) params.append("date", date);
