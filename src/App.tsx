@@ -18,8 +18,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/logs" element={
+          <Route path="/adminTds/" element={<Index />} />
+          <Route path="/adminTds/logs" element={
             <AdminLayout>
               <LogsPage />
             </AdminLayout>
